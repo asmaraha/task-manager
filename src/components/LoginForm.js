@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+
 import { setToken } from '../helpers/auth';
 import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { api } from '../api/api';
 
 function LoginForm() {
     const [username, setUsername] = useState('');
@@ -12,16 +12,11 @@ function LoginForm() {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:8080/api/auth/login', {
-                username,
-                password,
-            });
-            // Store JWT in localStorage
-            setToken(response.data.token);
-            // Redirect to tasks page
+            const { data } = await api.login({ username, password });
+            setToken(data.token);
             navigate('/tasks');
         } catch (error) {
-            alert('Invalid credentials or server error');
+            alert('Invalid credentials');
         }
     };
 
@@ -29,14 +24,17 @@ function LoginForm() {
         <div className="container mt-5">
             <h2>Login</h2>
             <form onSubmit={handleLogin} style={{ maxWidth: '400px' }}>
-                {/* username and password fields */}
+                <div className="mb-3">
+                    <label>Username:</label>
+                    <input className="form-control" value={username} onChange={(e) => setUsername(e.target.value)} required />
+                </div>
+                <div className="mb-3">
+                    <label>Password:</label>
+                    <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                </div>
                 <button type="submit" className="btn btn-primary">Login</button>
             </form>
-
-            {/*  Add a link to register  */}
-            <p className="mt-3">
-                Don&apos;t have an account? <Link to="/register">Register here</Link>
-            </p>
+            <p className="mt-3">Don't have an account? <a href="/register">Register here</a></p>
         </div>
     );
 }

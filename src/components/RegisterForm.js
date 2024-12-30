@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+
 import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { api } from '../api/api';
 
 function RegisterForm() {
     const [username, setUsername] = useState('');
@@ -11,14 +11,11 @@ function RegisterForm() {
     const handleRegister = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:8080/api/auth/register', {
-                username,
-                password,
-            });
+            await api.register({ username, password });
             alert('Registration successful!');
             navigate('/login');
         } catch (error) {
-            alert(error.response?.data?.message || 'Error registering user');
+            alert('Error registering user');
         }
     };
 
@@ -26,15 +23,19 @@ function RegisterForm() {
         <div className="container mt-5">
             <h2>Register</h2>
             <form onSubmit={handleRegister} style={{ maxWidth: '400px' }}>
-                {/* username and password fields */}
+                <div className="mb-3">
+                    <label>Username:</label>
+                    <input className="form-control" value={username} onChange={(e) => setUsername(e.target.value)} required />
+                </div>
+                <div className="mb-3">
+                    <label>Password:</label>
+                    <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                </div>
                 <button type="submit" className="btn btn-primary">Register</button>
             </form>
-
-            <p className="mt-3">
-                Already have an account? <Link to="/login">Login here</Link>
-            </p>
         </div>
     );
 }
+
 
 export default RegisterForm;
